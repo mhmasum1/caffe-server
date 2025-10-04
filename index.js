@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -48,6 +48,13 @@ app.get('/coffees', async (req, res) => {
     }
 });
 
+app.get('/coffees/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await coffeesCollection.findOne(query);
+    res.send(result);
+})
+
 app.post('/coffees', async (req, res) => {
     try {
         const newCoffee = req.body;
@@ -59,6 +66,13 @@ app.post('/coffees', async (req, res) => {
         res.status(500).send({ error: 'Failed to add coffee' });
     }
 });
+
+app.delete('/coffees/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await coffeesCollection.deleteOne(query);
+    res.send(result);
+})
 
 app.get('/', (req, res) => {
     res.send('Coffee server is getting hotter.');
